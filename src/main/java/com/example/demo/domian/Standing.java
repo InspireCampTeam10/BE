@@ -21,7 +21,7 @@ public class Standing {
     @JoinColumn(name = "team_id")
     private Team team;
 
-    private int rank;
+    private int ranking;
 
     private int points;
 

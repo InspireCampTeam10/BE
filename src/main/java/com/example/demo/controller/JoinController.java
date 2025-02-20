@@ -21,7 +21,6 @@ public class JoinController {
     public String joinProcess(joinDTO joinDTO) {
 
         joinService.joinProcess(joinDTO);
-        System.out.println("Test Init");
 
         return "ok";
     }

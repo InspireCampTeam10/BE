@@ -24,22 +24,20 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public long getCurrentUID(String token) {
-        // JWT에서 모든 Claims 가져오기
-        Claims claims = jwtUtil.extractClaims(token);
+    public long getCurrentUID(String userName) {
 
-        //UID가 존재하는지 확인 후 long 타입으로 변환
-        if (claims.get("username") == null) {
+        String username = userRepository.findByUsername(userName).getUsername();
+
+        //userName에 해당하는 정보가 존재하는지 확인
+        if ( username == null) {
             throw new IllegalStateException("JWT에서 UID를 찾을 수 없습니다.");
         }
 
-        System.out.println(claims);
 
-
-        User userEntity = userRepository.findByUsername((String) claims.get("username"));
+        User userEntity = userRepository.findByUsername(username);
         long uid = userEntity.getUid();
 
-        System.out.println(uid);
+        System.out.println("uid: " + uid);
         return uid; // long 타입으로 변환 후 반환
 
     }

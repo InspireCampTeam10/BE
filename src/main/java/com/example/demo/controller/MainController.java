@@ -44,6 +44,8 @@ public class MainController {
 
     @GetMapping("/user/uid")
     public Long getClaims(@RequestParam String token){
-        return userService.getCurrentUID(token);
+        Long uid = userService.getCurrentUID(token);
+        System.out.println(uid);
+        return uid;
     }
 }

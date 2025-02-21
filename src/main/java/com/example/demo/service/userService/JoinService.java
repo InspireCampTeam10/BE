@@ -5,5 +5,5 @@ import org.springframework.stereotype.Service;
 
 
 public interface JoinService {
-    public void joinProcess(joinDTO joinDTO);
+    public boolean joinProcess(joinDTO joinDTO);
 }

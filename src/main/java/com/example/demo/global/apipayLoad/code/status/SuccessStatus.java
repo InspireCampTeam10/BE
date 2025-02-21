@@ -11,7 +11,8 @@ import org.springframework.http.HttpStatus;
 public enum SuccessStatus implements BaseCode {
 
     // 성공 응답
-    OK(HttpStatus.OK, "COMMON200", "OK");
+    OK(HttpStatus.OK, "COMMON200", "OK"),
+    USER_CREATED(HttpStatus.CREATED, "COMMON201" , "User Created" );
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -19,7 +19,7 @@ public class JoinServiceImpl implements JoinService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public void joinProcess(joinDTO joinDTO){
+    public boolean joinProcess(joinDTO joinDTO){
         String username = joinDTO.getUsername();
         String password = joinDTO.getPassword();
         String userNickname = joinDTO.getUserNickname();
@@ -30,8 +30,7 @@ public class JoinServiceImpl implements JoinService {
 //        System.out.println("username : " + username + " password : " + password + " nickname : " + userNickname);
 //        System.out.println("isExist : " + isExist);
         if(isExist){
-
-            return;
+            return false;
         }
 
         User data = new User();
@@ -42,5 +41,6 @@ public class JoinServiceImpl implements JoinService {
         data.setRole("ROLE_USER");
 
         userRepository.save(data);
+        return true;
     }
 }

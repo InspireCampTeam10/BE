@@ -2,14 +2,17 @@ package com.example.demo.service.userService;
 
 import com.example.demo.JWT.JWTUtil;
 import com.example.demo.domian.User;
+import com.example.demo.global.apipayLoad.ApiResponse;
+import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
+import com.example.demo.global.apipayLoad.handler.TempHandler;
 import com.example.demo.repository.UserRepository;
-import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -24,22 +27,19 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public long getCurrentUID(String userName) {
+    public ResponseEntity<ApiResponse<Long>> getCurrentUID(String username) {
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByUsername(username));
 
-        String username = userRepository.findByUsername(userName).getUsername();
-
-        //userName에 해당하는 정보가 존재하는지 확인
-        if ( username == null) {
-            throw new IllegalStateException("JWT에서 UID를 찾을 수 없습니다.");
+        if (userOptional.isEmpty()) {
+            return ResponseEntity
+                    .status(400)  // 🔥 HTTP 상태 코드 400 설정
+                    .body(ApiResponse.onFailure(ErrorStatus.MEMBER_NOT_FOUND.getCode(),
+                            ErrorStatus.MEMBER_NOT_FOUND.getMessage(), null));
         }
 
-
-        User userEntity = userRepository.findByUsername(username);
-        long uid = userEntity.getUid();
-
-        System.out.println("uid: " + uid);
-        return uid; // long 타입으로 변환 후 반환
-
+        Long uid = userOptional.get().getUid();
+        return ResponseEntity
+                .ok(ApiResponse.onSuccess(uid)); // ✅ 성공 시 200 OK 반환
     }
 
     @Transactional

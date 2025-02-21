@@ -2,9 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.global.apipayLoad.code.ReasonDTO;
+import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
+import com.example.demo.global.apipayLoad.handler.TempHandler;
 import com.example.demo.service.userService.UserService;
 import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 @Controller
 @ResponseBody
@@ -48,13 +53,7 @@ public class MainController {
 
     @Operation(summary = "uid 가져오기")
     @GetMapping("/user/uid")
-    public ApiResponse<Long> getUidByUsername(String userName){
-        Long uid = userService.getCurrentUID(userName);
-        System.out.println(uid);
-
-        if(uid == null){
-            return ApiResponse.onFailure("400", "Failed", uid);
-        }
-        return ApiResponse.onSuccess(uid);
+    public ResponseEntity<ApiResponse<Long>> getUidByUsername(String userName) {
+        return userService.getCurrentUID(userName);  // 바로 반환
     }
 }

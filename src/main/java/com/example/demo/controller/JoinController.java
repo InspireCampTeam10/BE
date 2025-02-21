@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.joinDTO;
+import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.global.apipayLoad.code.ReasonDTO;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
 import com.example.demo.global.apipayLoad.code.status.SuccessStatus;
@@ -25,17 +26,20 @@ public class JoinController {
     }
 
     @PostMapping("/user/join")
-    public ResponseEntity<ReasonDTO> joinProcess(joinDTO joinDTO) {
+    public ResponseEntity<ApiResponse<Boolean>> joinProcess(joinDTO joinDTO) {
         boolean isSuccess = joinService.joinProcess(joinDTO);
 
         if (isSuccess) {
-            // ✅ 회원가입 성공 (201 Created)
+            //  회원가입 성공 (201 or 200 Created)
             return ResponseEntity
-                    .status(SuccessStatus.USER_CREATED.getHttpStatus())
-                    .body(SuccessStatus.USER_CREATED.getReason());
+                    .ok(ApiResponse.onSuccess(true));
         } else {
-            // ❌ 회원가입 실패 (이미 존재하는 회원)
-            throw new TempHandler(ErrorStatus.MEMBER_ALREADY_EXIST);
+            //  회원가입 실패 (이미 존재하는 회원)
+            //  throw new TempHandler(ErrorStatus.MEMBER_ALREADY_EXIST);
+            return ResponseEntity
+                    .status(400)
+                    .body(ApiResponse.onFailure(ErrorStatus.MEMBER_ALREADY_EXIST.getCode(),
+                            ErrorStatus.MEMBER_ALREADY_EXIST.getMessage(), false));
         }
     }
 }

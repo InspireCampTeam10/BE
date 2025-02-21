@@ -1,6 +1,7 @@
 package com.example.demo.JWT;
 
 import com.example.demo.dto.CustomUserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,8 +12,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -36,7 +40,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication){
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
+    throws IOException {
 //        System.out.println("Successful Authentication");
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String username = customUserDetails.getUsername();
@@ -51,13 +56,46 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 베어러 텍스트 뒤에 띄어쓰기 꼭 해야한다 ㅋㅋ
         response.addHeader("Authorization","Bearer "+token);
+
+        //  JSON 형식의 응답을 만들기 위해 Map 사용
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("token", token);
+        responseBody.put("token_type", "Bearer");
+        responseBody.put("username", username);
+        responseBody.put("role", role);
+        // 여기서 UserNickname 추가할수도있음 ㅇㅇ
+
+        // ✅ 응답을 JSON 형식으로 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // ✅ Jackson의 ObjectMapper를 사용하여 JSON으로 변환 후 응답 Body에 추가
+        new ObjectMapper().writeValue(response.getWriter(), responseBody);
     }
 
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed){
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed)
+    throws IOException {
         // System.out.println("Unsuccessful Authentication");
-        response.setStatus(401);
+        // response.setStatus(401);
+
+        // ✅ 응답 상태 코드 설정 (401 Unauthorized)
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // ✅ JSON 응답을 위한 Map 생성
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("isSuccess", false);
+        responseBody.put("httpStatus", "UNAUTHORIZED");
+        responseBody.put("code", "AUTH401");
+        responseBody.put("message", "로그인 실패: 잘못된 사용자 정보입니다.");
+        responseBody.put("error", failed.getMessage());  // 실제 예외 메시지도 포함 가능
+
+        // ✅ Jackson ObjectMapper를 사용하여 JSON 변환 후 응답 Body에 추가
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(response.getWriter(), responseBody);
 
     }
 }

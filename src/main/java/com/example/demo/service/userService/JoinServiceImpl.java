@@ -27,8 +27,8 @@ public class JoinServiceImpl implements JoinService {
         // 존재하는지 확인하고 결과값이 isExist에 존재
         Boolean isExist = userRepository.existsByUsername(username);
 
-        System.out.println("username : " + username + " password : " + password + " nickname : " + userNickname);
-        System.out.println("isExist : " + isExist);
+//        System.out.println("username : " + username + " password : " + password + " nickname : " + userNickname);
+//        System.out.println("isExist : " + isExist);
         if(isExist){
 
             return;

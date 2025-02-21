@@ -1,5 +1,6 @@
 package com.example.demo.JWT;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,5 +47,15 @@ public class JWTUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) // 언제까지 살아있을지. (언제 소멸될건지)
                 .signWith(secretKey) // 시크릿키를 통해 암호화를 진행
                 .compact();
+    }
+
+    public Claims extractClaims(String token) {
+        token = token.trim(); // 공백제거
+
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getPayload();
     }
 }

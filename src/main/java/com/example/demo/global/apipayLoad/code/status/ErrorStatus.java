@@ -40,7 +40,11 @@ public enum ErrorStatus implements BaseCode {
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD5002", "파일 삭제에 실패했습니다."),
 
     //method Error
-    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,"METHOD405", "허용되지 않은 HTTP 메서드입니다.");
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,"METHOD405", "허용되지 않은 HTTP 메서드입니다."),
+
+    //News Error
+    NEWS_NOT_FOUND(HttpStatus.BAD_REQUEST,"NEWS401", "News가 없습니다."),
+    NEWS_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"NEWS402", "News 생성을 실패했습니다.");
 
 
     private final HttpStatus httpStatus;

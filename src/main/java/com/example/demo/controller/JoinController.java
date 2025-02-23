@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.JWT.JWTUtil;
 import com.example.demo.dto.joinDTO;
 import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.global.apipayLoad.code.ReasonDTO;
@@ -15,31 +16,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RestController
 public class JoinController {
 
     private final JoinService joinService;
+    private final JWTUtil jwtUtil;
 
-    public JoinController(JoinService joinService) {
+    public JoinController(JoinService joinService, JWTUtil jwtUtil) {
         this.joinService = joinService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/user/join")
-    public ResponseEntity<ApiResponse<Boolean>> joinProcess(joinDTO joinDTO) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>>joinProcess(@RequestBody joinDTO joinDTO) {
         boolean isSuccess = joinService.joinProcess(joinDTO);
 
         if (isSuccess) {
-            //  회원가입 성공 (201 or 200 Created)
+            //회원가입 성공 시 JWT 토큰 생성
+            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", 6000 * 6000 * 100L);
+
+            // 응답 데이터 생성 (토큰 포함)
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("isSuccess", true);
+            responseBody.put("token", token);
+            responseBody.put("username", joinDTO.getUsername());
+
+            //성공 응답 (201 Created)
             return ResponseEntity
-                    .ok(ApiResponse.onSuccess(true));
+                    .status(201)
+                    .body(ApiResponse.onSuccess(responseBody));
         } else {
-            //  회원가입 실패 (이미 존재하는 회원)
-            //  throw new TempHandler(ErrorStatus.MEMBER_ALREADY_EXIST);
+            //회원가입 실패 (이미 존재하는 회원)
             return ResponseEntity
                     .status(400)
                     .body(ApiResponse.onFailure(ErrorStatus.MEMBER_ALREADY_EXIST.getCode(),
-                            ErrorStatus.MEMBER_ALREADY_EXIST.getMessage(), false));
+                            ErrorStatus.MEMBER_ALREADY_EXIST.getMessage(), null));
         }
     }
 }

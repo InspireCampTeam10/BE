@@ -26,12 +26,34 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        setFilterProcessesUrl("/user/login"); // 로그인 URL 추가
     }
+
+//    @Override
+//    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+//        String username = obtainUsername(request);
+//        String password = obtainPassword(request);
+//
+//        System.out.println(username);
+//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+//
+//        return authenticationManager.authenticate(authToken);
+//    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        String username = obtainUsername(request);
-        String password = obtainPassword(request);
+        // JSON 형식으로 Request가 들어가서 ObjectMapper로 아이디 비밀번호 추출
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> jsonRequest = null;
+
+        try {
+            jsonRequest = mapper.readValue(request.getInputStream(), Map.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        String username = jsonRequest.get("username");
+        String password = jsonRequest.get("password");
 
         System.out.println(username);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
@@ -80,12 +102,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // System.out.println("Unsuccessful Authentication");
         // response.setStatus(401);
 
-        // ✅ 응답 상태 코드 설정 (401 Unauthorized)
+        // 응답 상태 코드 설정 (401 Unauthorized)
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // ✅ JSON 응답을 위한 Map 생성
+        // JSON 응답을 위한 Map 생성
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("isSuccess", false);
         responseBody.put("httpStatus", "UNAUTHORIZED");
@@ -93,7 +115,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("message", "로그인 실패: 잘못된 사용자 정보입니다.");
         responseBody.put("error", failed.getMessage());  // 실제 예외 메시지도 포함 가능
 
-        // ✅ Jackson ObjectMapper를 사용하여 JSON 변환 후 응답 Body에 추가
+        // Jackson ObjectMapper를 사용하여 JSON 변환 후 응답 Body에 추가
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(response.getWriter(), responseBody);
 

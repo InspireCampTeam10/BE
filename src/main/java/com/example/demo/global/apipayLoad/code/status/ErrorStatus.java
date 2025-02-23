@@ -34,6 +34,11 @@ public enum ErrorStatus implements BaseCode {
     ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"ACCESS_TOKEN4001","엑세스 토큰이 없습니다."),
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "ACCESS_TOKEN4002", "엑세스 토큰이 만료되었습니다."),
 
+    // League Error
+    LEAGUE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LEAGUE4001", "이미 존재하는 리그입니다."),
+    INIT_INFO_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LEAGUE4002", "이미 초기 정보가 등록된 리그입니다."),
+    LEAGUE_NOT_FOUND(HttpStatus.BAD_REQUEST, "LEAGUE4003", "리그가 존재하지 않습니다."),
+    INIT_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "LEAGUE4004", "초기 정보가 존재하지 않습니다."),
 
     // Upload Error
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD5001", "파일 업로드에 실패했습니다."),

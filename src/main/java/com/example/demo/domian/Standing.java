@@ -1,12 +1,14 @@
 package com.example.demo.domian;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Standing {
     @Id
@@ -39,4 +41,21 @@ public class Standing {
 
     // 유럽대항전, 강등권 등 표시
     private String description;
+
+    private String updatedAt;
+
+    public void updateStanding(int ranking, int points, int goalsDiff, int goalsFor, int goalsAgainst, int totalPlayed, int totalWin, int totalDraw, int totalLose, String form, String description, String updatedAt) {
+        this.ranking = ranking;
+        this.points = points;
+        this.goalsDiff = goalsDiff;
+        this.goalsFor = goalsFor;
+        this.goalsAgainst = goalsAgainst;
+        this.totalPlayed = totalPlayed;
+        this.totalWin = totalWin;
+        this.totalDraw = totalDraw;
+        this.totalLose = totalLose;
+        this.form = form;
+        this.description = description;
+        this.updatedAt = updatedAt;
+    }
 }

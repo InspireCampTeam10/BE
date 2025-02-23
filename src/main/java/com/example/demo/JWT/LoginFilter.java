@@ -42,6 +42,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        System.out.println("attemptAuthentication + Debug");
         // JSON 형식으로 Request가 들어가서 ObjectMapper로 아이디 비밀번호 추출
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> jsonRequest = null;
@@ -55,7 +56,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = jsonRequest.get("username");
         String password = jsonRequest.get("password");
 
-        System.out.println(username);
+        System.out.println("username, password in attemptAuthentic: " + username + " " + password);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
         return authenticationManager.authenticate(authToken);
@@ -73,8 +74,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
+        String nickname = customUserDetails.getUserNickname();
 
-        String token = jwtUtil.createJwt(username,role,600*600*100L);
+        String token = jwtUtil.createJwt(username,role, nickname, 600*600*100L);
 
         // 베어러 텍스트 뒤에 띄어쓰기 꼭 해야한다 ㅋㅋ
         response.addHeader("Authorization","Bearer "+token);
@@ -82,9 +84,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         //  JSON 형식의 응답을 만들기 위해 Map 사용
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("token", token);
-        responseBody.put("token_type", "Bearer");
-        responseBody.put("username", username);
-        responseBody.put("role", role);
+//        responseBody.put("token_type", "Bearer");
+//        responseBody.put("username", username);
+//        responseBody.put("role", role);
         // 여기서 UserNickname 추가할수도있음 ㅇㅇ
 
         // 응답을 JSON 형식으로 설정

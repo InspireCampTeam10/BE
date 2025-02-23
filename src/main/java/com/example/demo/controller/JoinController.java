@@ -36,7 +36,7 @@ public class JoinController {
 
         if (isSuccess) {
             //회원가입 성공 시 JWT 토큰 생성
-            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", 6000 * 6000 * 100L);
+            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", joinDTO.getUserNickname(),6000 * 6000 * 100L);
 
             // 응답 데이터 생성 (토큰 포함)
             Map<String, Object> responseBody = new HashMap<>();

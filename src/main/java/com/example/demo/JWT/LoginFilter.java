@@ -65,11 +65,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("role", role);
         // 여기서 UserNickname 추가할수도있음 ㅇㅇ
 
-        // ✅ 응답을 JSON 형식으로 설정
+        // 응답을 JSON 형식으로 설정
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // ✅ Jackson의 ObjectMapper를 사용하여 JSON으로 변환 후 응답 Body에 추가
+        // Jackson의 ObjectMapper를 사용하여 JSON으로 변환 후 응답 Body에 추가
         new ObjectMapper().writeValue(response.getWriter(), responseBody);
     }
 

@@ -79,6 +79,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/user/login", "/user", "/user/join").permitAll()
                         .requestMatchers("/user/admin").hasRole("ADMIN")
+                        .requestMatchers("/openai/history", "/openai/search").authenticated()
                         .anyRequest().authenticated());
 
         http

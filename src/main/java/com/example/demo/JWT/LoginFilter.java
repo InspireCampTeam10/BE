@@ -75,8 +75,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
         String nickname = customUserDetails.getUserNickname();
+        String imgUrl =customUserDetails.getUserImgUrl();
 
-        String token = jwtUtil.createJwt(username,role, nickname, 600*600*100L);
+        String token = jwtUtil.createJwt(username,role, nickname, imgUrl,600*600*100L);
 
         // 베어러 텍스트 뒤에 띄어쓰기 꼭 해야한다 ㅋㅋ
         response.addHeader("Authorization","Bearer "+token);

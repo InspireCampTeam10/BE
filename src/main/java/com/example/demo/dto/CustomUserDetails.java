@@ -44,6 +44,8 @@ public class CustomUserDetails implements UserDetails {
         return userEntity.getUserNickname();
     }
 
+    public String getUserImgUrl() {return userEntity.getProfileImageUrl();}
+
     @Override
     public boolean isAccountNonExpired() {
 //        return UserDetails.super.isAccountNonExpired();

@@ -34,7 +34,7 @@ public class JoinController {
     public ApiResponse<Map<String, Object>> joinProcess(@RequestBody joinDTO joinDTO) {
             joinService.joinProcess(joinDTO);
             //회원가입 성공 시 JWT 토큰 생성
-            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", joinDTO.getUserNickname(), 6000 * 6000 * 100L);
+            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", joinDTO.getUserNickname(), null,6000 * 6000 * 100L);
 
             // 응답 데이터 생성 (토큰 포함)
             Map<String, Object> responseBody = new HashMap<>();

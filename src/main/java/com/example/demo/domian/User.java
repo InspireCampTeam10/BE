@@ -25,6 +25,4 @@ public class User {
     private String userNickname;
 
     private String role;
-
-    private String threadId;
 }

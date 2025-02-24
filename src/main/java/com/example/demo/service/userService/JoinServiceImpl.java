@@ -2,6 +2,8 @@ package com.example.demo.service.userService;
 
 import com.example.demo.domian.User;
 import com.example.demo.dto.joinDTO;
+import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
+import com.example.demo.global.exception.GeneralException;
 import com.example.demo.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,11 +29,10 @@ public class JoinServiceImpl implements JoinService {
         // 존재하는지 확인하고 결과값이 isExist에 존재
         Boolean isExist = userRepository.existsByUsername(username);
 
-        System.out.println("username : " + username + " password : " + password + " nickname : " + userNickname);
-        System.out.println("isExist : " + isExist);
+//        System.out.println("username : " + username + " password : " + password + " nickname : " + userNickname);
+//        System.out.println("isExist : " + isExist);
         if(isExist){
-
-            return;
+            throw new GeneralException(ErrorStatus.MEMBER_ALREADY_EXIST);
         }
 
         User data = new User();

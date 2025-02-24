@@ -40,7 +40,7 @@ public class FootballServiceImpl implements FootballService {
     private final StandingRepository standingRepository;
     private final TeamStatisticsRepository teamStatisticsRepository;
 
-    @Value("${rapid.api.key}")
+    @Value("${rapid.api-key}")
     private String RAPID_API_KEY;
 
     @Override

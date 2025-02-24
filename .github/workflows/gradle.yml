@@ -24,15 +24,13 @@ jobs:
     - uses: actions/checkout@v4
 
     # 0. application.yml 생성(With Github SecretRepo Var)
-    # - name: Create application.yml
-    #   run: |
-    #     cat <<'EOF' > src/main/resources/application.yml
-    #     ${{ secrets.APPLICATION }}
-    #     EOF
     - name: Create application.yml
       run: |
         mkdir -p src/main/resources
-        echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
+        cat <<EOF > src/main/resources/application.yml
+        ${{ secrets.APPLICATION }}
+        EOF
+
 
     # 0-1. application.yml 테스트
     - name: Verify application.yml

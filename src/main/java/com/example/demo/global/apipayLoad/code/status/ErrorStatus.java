@@ -47,6 +47,10 @@ public enum ErrorStatus implements BaseCode {
     //method Error
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,"METHOD405", "허용되지 않은 HTTP 메서드입니다."),
 
+    //News Error
+    NEWS_NOT_FOUND(HttpStatus.BAD_REQUEST,"NEWS401", "News가 없습니다."),
+    NEWS_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"NEWS402", "News 생성을 실패했습니다.");
+
     // request Error
     BAD_RAPID_API_REQUEST(HttpStatus.BAD_REQUEST, "REQUEST4001", "RapidAPI 요청에 실패했습니다.");
 

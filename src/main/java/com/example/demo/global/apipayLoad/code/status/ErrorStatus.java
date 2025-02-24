@@ -34,14 +34,25 @@ public enum ErrorStatus implements BaseCode {
     ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED,"ACCESS_TOKEN4001","엑세스 토큰이 없습니다."),
     ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "ACCESS_TOKEN4002", "엑세스 토큰이 만료되었습니다."),
 
+    // League Error
+    LEAGUE_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LEAGUE4001", "이미 존재하는 리그입니다."),
+    INIT_INFO_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "LEAGUE4002", "이미 초기 정보가 등록된 리그입니다."),
+    LEAGUE_NOT_FOUND(HttpStatus.BAD_REQUEST, "LEAGUE4003", "리그가 존재하지 않습니다."),
+    INIT_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "LEAGUE4004", "초기 정보가 존재하지 않습니다."),
 
     // Upload Error
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD5001", "파일 업로드에 실패했습니다."),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD5002", "파일 삭제에 실패했습니다."),
 
     //method Error
-    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,"METHOD405", "허용되지 않은 HTTP 메서드입니다.");
+    METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED,"METHOD405", "허용되지 않은 HTTP 메서드입니다."),
 
+    //News Error
+    NEWS_NOT_FOUND(HttpStatus.BAD_REQUEST,"NEWS401", "News가 없습니다."),
+    NEWS_CREATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"NEWS402", "News 생성을 실패했습니다."),
+
+    // request Error
+    BAD_RAPID_API_REQUEST(HttpStatus.BAD_REQUEST, "REQUEST4001", "RapidAPI 요청에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

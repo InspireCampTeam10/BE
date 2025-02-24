@@ -38,11 +38,13 @@ public class JWTUtil {
 
 
     // 토큰 생성
-    public String createJwt(String username, String role, String nickname, Long expiredMs) {
+    public String createJwt(String username, String role, String nickname, String imgUrl,Long expiredMs) {
         System.out.println("createJwt");
         return Jwts.builder()
                 .claim("username", username)
                 .claim("role", role)
+                .claim("nickname", nickname)
+                .claim("imgUrl", imgUrl)
                 .issuedAt(new Date(System.currentTimeMillis())) // 언제 발행됐는지(현재 기준 시간을 발행시간으로 지정
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) // 언제까지 살아있을지. (언제 소멸될건지)
                 .signWith(secretKey) // 시크릿키를 통해 암호화를 진행

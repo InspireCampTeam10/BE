@@ -11,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -43,5 +41,12 @@ public class UserController {
         userService.updateNickname(username, nicknameUpdateDTO.getUserNickname());
 
             return ApiResponse.onSuccess(true);
+    }
+
+    // ✅ 기존 프로필 이미지를 업데이트 (덮어쓰기)
+    @PutMapping("/user/profileIMG")
+    public ApiResponse<String> updateProfileImage(@RequestParam String username, @RequestParam("file") MultipartFile file) {
+        String fileUrl = userService.updateProfileImage(username, file);
+        return ApiResponse.onSuccess(fileUrl);
     }
 }

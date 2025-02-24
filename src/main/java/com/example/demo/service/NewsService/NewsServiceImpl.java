@@ -24,10 +24,10 @@ public class NewsServiceImpl implements NewsService {
 
     public List<NewsResponseDto> getLatestFitNews(Long userId) {
         List<News> newsList = newsRepository.findTop6ByUserIdOrderByTimestampDesc(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.NEWS_NOT_FOUND));
 
         return newsList.stream()
-                .map(news -> new NewsResponseDto(news.getTitle(), news.getContent(), news.getTimestamp()))
+                .map(news -> new NewsResponseDto(news.getId(), news.getTitle(), news.getContent(), news.getTimestamp()))
                 .collect(Collectors.toList());
     }
 
@@ -46,6 +46,18 @@ public class NewsServiceImpl implements NewsService {
         newsRepository.saveAll(histories);
         return newsResponse;
     };
+
+
+    public void deleteHistory(Long userId, Long historyId){
+        News history = newsRepository.findById(historyId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.NEWS_NOT_FOUND));
+
+        if (!history.getUserId().equals(userId)) {
+            throw new GeneralException(ErrorStatus.FORBIDDEN);
+        }
+
+        newsRepository.delete(history);
+    }
 
     // 애플리케이션 실행 시 더미 데이터 삽입
     /*

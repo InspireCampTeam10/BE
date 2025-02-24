@@ -10,4 +10,6 @@ public interface NewsService {
     List<NewsResponseDto> getLatestFitNews(Long userId);
 
     List<GenerateNewsResponseDto> generateNewsResponse(GenerateNewsRequestDto requestDto, Long userId);
+
+    void deleteHistory(Long userId, Long historyId);
 }

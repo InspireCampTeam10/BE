@@ -24,7 +24,7 @@ services:
 
   backend:
     image: kimdaehyun2019/github-actions-demo:latest
-    container_name: backend_container  # Docker Hub에서 이미지 가져오기
+    container_name: backend_container  # Docker Hub에서 이미지 가져온다
     restart: always
     depends_on:
       mysql:

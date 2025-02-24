@@ -7,3 +7,5 @@ COPY build/libs/*.jar app.jar
 
 # 컨테이너가 실행될 때 Spring Boot 애플리케이션 실행
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+#올라가는지 확인해야함.

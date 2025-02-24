@@ -23,7 +23,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # 0. application.yml 생성(With Github SecretRepo Var)
+    # 0. application.yml 생성(With Github SecretRepo Var + ddl:update)
     - name: Create application.yml
       run: |
         mkdir -p src/main/resources

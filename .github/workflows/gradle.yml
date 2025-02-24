@@ -26,8 +26,10 @@ jobs:
     # 0. application.yml 생성(With Github SecretRepo Var)
     - name: Create application.yml
       run: |
-        echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
-    
+        cat <<'EOF' > src/main/resources/application.yml
+        ${{ secrets.APPLICATION }}
+        EOF
+
     # 0-1. application.yml 테스트
     - name: Verify application.yml
       run: cat src/main/resources/application.yml

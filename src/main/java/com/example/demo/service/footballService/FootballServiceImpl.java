@@ -6,8 +6,7 @@ import com.example.demo.domian.Team;
 import com.example.demo.domian.TeamStatistics;
 import com.example.demo.dto.request.LeagueInfoUpdateDTO;
 import com.example.demo.dto.request.TeamInfoUpdateDTO;
-import com.example.demo.dto.response.HomeResponseDTO;
-import com.example.demo.dto.response.StandingResponseDTO;
+import com.example.demo.dto.response.*;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
 import com.example.demo.global.exception.GeneralException;
 import com.example.demo.repository.LeagueRepository;
@@ -136,6 +135,51 @@ public class FootballServiceImpl implements FootballService {
                 .build();
     }
 
+    @Override
+    public LeagueInfoResponseDTO getLeagueInfo() {
+        League league = leagueRepository.findById(39L).orElseThrow(
+                () -> new GeneralException(ErrorStatus.INIT_INFO_NOT_FOUND)
+        );
+
+        return LeagueInfoResponseDTO.builder()
+                .name(league.getName())
+                .country(league.getCountry())
+                .logo(league.getLogo())
+                .season(league.getSeason())
+                .build();
+    }
+
+    @Override
+    public TeamInfoResponseDTO getTeamInfo(Long teamId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new GeneralException(ErrorStatus.TEAM_NOT_FOUND)
+        );
+
+        return TeamInfoResponseDTO.builder()
+                .id(teamId)
+                .name(team.getName())
+                .country(team.getCountry())
+                .city(team.getCity())
+                .venueName(team.getVenueName())
+                .venueImage(team.getVenueImage())
+                .build();
+    }
+
+    @Override
+    public TeamResponseDTO getTeamStandingAndStatistics(Long teamId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(
+                () -> new GeneralException(ErrorStatus.TEAM_NOT_FOUND)
+        );
+        Standing standing = standingRepository.findByTeamIdAndLeagueId(teamId, 39L).orElseThrow(
+                () -> new GeneralException(ErrorStatus.STANDING_NOT_FOUND)
+        );
+        TeamStatistics teamStatistics = teamStatisticsRepository.findByTeamIdAndLeagueId(teamId, 39L).orElseThrow(
+                () -> new GeneralException(ErrorStatus.TEAM_STATISTICS_NOT_FOUND)
+        );
+
+        return TeamResponseDTO.of(team, standing, teamStatistics);
+    }
+
     // RapidAPI를 호출하여 데이터를 가져오는 메소드
     private String requestRapidAPI(String url){
         HttpHeaders headers = new HttpHeaders();
@@ -214,24 +258,24 @@ public class FootballServiceImpl implements FootballService {
                 .team(team)
                 .league(league)
                 .form(statisticsNode.path("form").asText())
-                .total_played(statisticsNode.path("fixtures").path("played").path("total").asInt())
-                .home_played(statisticsNode.path("fixtures").path("played").path("home").asInt())
-                .away_played(statisticsNode.path("fixtures").path("played").path("away").asInt())
-                .total_win(statisticsNode.path("fixtures").path("wins").path("total").asInt())
-                .home_win(statisticsNode.path("fixtures").path("wins").path("home").asInt())
-                .away_win(statisticsNode.path("fixtures").path("wins").path("away").asInt())
-                .total_draw(statisticsNode.path("fixtures").path("draws").path("total").asInt())
-                .home_draw(statisticsNode.path("fixtures").path("draws").path("home").asInt())
-                .away_draw(statisticsNode.path("fixtures").path("draws").path("away").asInt())
-                .total_lose(statisticsNode.path("fixtures").path("loses").path("total").asInt())
-                .home_lose(statisticsNode.path("fixtures").path("loses").path("home").asInt())
-                .away_lose(statisticsNode.path("fixtures").path("loses").path("away").asInt())
-                .total_goal_for(statisticsNode.path("goals").path("for").path("total").path("total").asInt())
-                .home_goal_for(statisticsNode.path("goals").path("for").path("total").path("home").asInt())
-                .away_goal_for(statisticsNode.path("goals").path("for").path("total").path("away").asInt())
-                .total_goal_against(statisticsNode.path("goals").path("against").path("total").path("total").asInt())
-                .home_goal_against(statisticsNode.path("goals").path("against").path("total").path("home").asInt())
-                .away_goal_against(statisticsNode.path("goals").path("against").path("total").path("away").asInt())
+                .totalPlayed(statisticsNode.path("fixtures").path("played").path("total").asInt())
+                .homePlayed(statisticsNode.path("fixtures").path("played").path("home").asInt())
+                .awayPlayed(statisticsNode.path("fixtures").path("played").path("away").asInt())
+                .totalWin(statisticsNode.path("fixtures").path("wins").path("total").asInt())
+                .homeWin(statisticsNode.path("fixtures").path("wins").path("home").asInt())
+                .awayWin(statisticsNode.path("fixtures").path("wins").path("away").asInt())
+                .totalDraw(statisticsNode.path("fixtures").path("draws").path("total").asInt())
+                .homeDraw(statisticsNode.path("fixtures").path("draws").path("home").asInt())
+                .awayDraw(statisticsNode.path("fixtures").path("draws").path("away").asInt())
+                .totalLose(statisticsNode.path("fixtures").path("loses").path("total").asInt())
+                .homeLose(statisticsNode.path("fixtures").path("loses").path("home").asInt())
+                .awayLose(statisticsNode.path("fixtures").path("loses").path("away").asInt())
+                .totalGoalFor(statisticsNode.path("goals").path("for").path("total").path("total").asInt())
+                .homeGoalFor(statisticsNode.path("goals").path("for").path("total").path("home").asInt())
+                .awayGoalFor(statisticsNode.path("goals").path("for").path("total").path("away").asInt())
+                .totalGoalAgainst(statisticsNode.path("goals").path("against").path("total").path("total").asInt())
+                .homeGoalAgainst(statisticsNode.path("goals").path("against").path("total").path("home").asInt())
+                .awayGoalAgainst(statisticsNode.path("goals").path("against").path("total").path("away").asInt())
                 .build()
         );
 

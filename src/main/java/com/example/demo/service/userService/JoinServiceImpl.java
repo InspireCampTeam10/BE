@@ -2,6 +2,8 @@ package com.example.demo.service.userService;
 
 import com.example.demo.domian.User;
 import com.example.demo.dto.joinDTO;
+import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
+import com.example.demo.global.exception.GeneralException;
 import com.example.demo.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class JoinServiceImpl implements JoinService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public boolean joinProcess(joinDTO joinDTO){
+    public void joinProcess(joinDTO joinDTO){
         String username = joinDTO.getUsername();
         String password = joinDTO.getPassword();
         String userNickname = joinDTO.getUserNickname();
@@ -30,7 +32,7 @@ public class JoinServiceImpl implements JoinService {
 //        System.out.println("username : " + username + " password : " + password + " nickname : " + userNickname);
 //        System.out.println("isExist : " + isExist);
         if(isExist){
-            return false;
+            throw new GeneralException(ErrorStatus.MEMBER_ALREADY_EXIST);
         }
 
         User data = new User();
@@ -41,6 +43,5 @@ public class JoinServiceImpl implements JoinService {
         data.setRole("ROLE_USER");
 
         userRepository.save(data);
-        return true;
     }
 }

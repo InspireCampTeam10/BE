@@ -31,12 +31,10 @@ public class JoinController {
     }
 
     @PostMapping("/user/join")
-    public ResponseEntity<ApiResponse<Map<String, Object>>>joinProcess(@RequestBody joinDTO joinDTO) {
-        boolean isSuccess = joinService.joinProcess(joinDTO);
-
-        if (isSuccess) {
+    public ApiResponse<Map<String, Object>> joinProcess(@RequestBody joinDTO joinDTO) {
+            joinService.joinProcess(joinDTO);
             //회원가입 성공 시 JWT 토큰 생성
-            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", joinDTO.getUserNickname(),6000 * 6000 * 100L);
+            String token = jwtUtil.createJwt(joinDTO.getUsername(), "ROLE_USER", joinDTO.getUserNickname(), 6000 * 6000 * 100L);
 
             // 응답 데이터 생성 (토큰 포함)
             Map<String, Object> responseBody = new HashMap<>();
@@ -45,15 +43,6 @@ public class JoinController {
             responseBody.put("username", joinDTO.getUsername());
 
             //성공 응답 (201 Created)
-            return ResponseEntity
-                    .status(201)
-                    .body(ApiResponse.onSuccess(responseBody));
-        } else {
-            //회원가입 실패 (이미 존재하는 회원)
-            return ResponseEntity
-                    .status(400)
-                    .body(ApiResponse.onFailure(ErrorStatus.MEMBER_ALREADY_EXIST.getCode(),
-                            ErrorStatus.MEMBER_ALREADY_EXIST.getMessage(), null));
-        }
+            return ApiResponse.onSuccess(responseBody);
     }
 }

@@ -5,6 +5,7 @@ import com.example.demo.domian.User;
 import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
 import com.example.demo.global.apipayLoad.handler.TempHandler;
+import com.example.demo.global.exception.GeneralException;
 import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
@@ -26,35 +27,31 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    // Return -> Long
     @Override
-    public ResponseEntity<ApiResponse<Long>> getCurrentUID(String username) {
+    public Long getCurrentUID(String username) {
         Optional<User> userOptional = Optional.ofNullable(userRepository.findByUsername(username));
 
         if (userOptional.isEmpty()) {
-            return ResponseEntity
-                    .status(400)  // 🔥 HTTP 상태 코드 400 설정
-                    .body(ApiResponse.onFailure(ErrorStatus.MEMBER_NOT_FOUND.getCode(),
-                            ErrorStatus.MEMBER_NOT_FOUND.getMessage(), null));
+            throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
         }
 
         Long uid = userOptional.get().getUid();
-        return ResponseEntity
-                .ok(ApiResponse.onSuccess(uid)); // ✅ 성공 시 200 OK 반환
+        return uid;
     }
 
     @Transactional
     @Override
-    public boolean updateNickname(String username, String newNickname){
+    public void updateNickname(String username, String newNickname){
         User userEntity = userRepository.findByUsername(username);
 
         System.out.println("username: " + username + ", newNickName: " + newNickname);
         if(userEntity == null){
             System.out.println("사용자 없음");
-            return false;
+            throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
         }
 
         userEntity.setUserNickname(newNickname);
         userRepository.save(userEntity);
-        return true;
     }
 }

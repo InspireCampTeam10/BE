@@ -53,7 +53,7 @@ public class MainController {
 
     @Operation(summary = "uid 가져오기")
     @GetMapping("/user/uid")
-    public ResponseEntity<ApiResponse<Long>> getUidByUsername(String userName) {
-        return userService.getCurrentUID(userName);  // 바로 반환
+    public ApiResponse<Long> getUidByUsername(String userName) {
+        return ApiResponse.onSuccess(userService.getCurrentUID(userName));
     }
 }

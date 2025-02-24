@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class NewsResponseDto {
+    private Long id;
     private String title;
     private String summary;
     private LocalDateTime timestamp;

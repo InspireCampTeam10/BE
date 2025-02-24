@@ -22,6 +22,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
+    # 0. application.yml 생성(With Github SecretRepo Var)
+    - name: Create application.yml
+      run: |
+        echo "${{ secrets.APPLICATION }}" > src/main/resources/application.yml
+    
+    # 0-1. application.yml 테스트
+    - name: Verify application.yml
+      run: cat src/main/resources/application.yml
+    
     # 1. Java 17 세팅
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -37,6 +47,7 @@ jobs:
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: clean bootJar
+
     # 3. Docker 이미지 빌드
     - name: docker image build
       run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/springimg .

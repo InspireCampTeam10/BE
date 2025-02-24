@@ -11,6 +11,7 @@ import com.example.demo.service.OpenAIApiService.OpenAIApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,11 @@ public class NewsServiceImpl implements NewsService {
 
     public List<NewsResponseDto> getLatestFitNews(Long userId) {
         List<News> newsList = newsRepository.findTop6ByUserIdOrderByTimestampDesc(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.NEWS_NOT_FOUND));
+                .orElse(Collections.emptyList());
+
+        if (newsList.isEmpty()) {
+            throw new GeneralException(ErrorStatus.NEWS_NOT_FOUND);
+        }
 
         return newsList.stream()
                 .map(news -> new NewsResponseDto(news.getId(), news.getTitle(), news.getContent(), news.getTimestamp()))
@@ -48,7 +53,7 @@ public class NewsServiceImpl implements NewsService {
     };
 
 
-    public void deleteHistory(Long userId, Long historyId){
+    public void deleteHistory(Long historyId, Long userId){
         News history = newsRepository.findById(historyId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.NEWS_NOT_FOUND));
 

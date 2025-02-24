@@ -5,7 +5,6 @@ import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.global.apipayLoad.code.ReasonDTO;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
 import com.example.demo.global.apipayLoad.code.status.SuccessStatus;
-import com.example.demo.global.apipayLoad.handler.TempHandler;
 import com.example.demo.service.userService.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

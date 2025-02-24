@@ -4,6 +4,8 @@ import com.example.demo.domian.League;
 import com.example.demo.domian.Standing;
 import com.example.demo.domian.Team;
 import com.example.demo.domian.TeamStatistics;
+import com.example.demo.dto.response.HomeResponseDTO;
+import com.example.demo.dto.response.StandingResponseDTO;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
 import com.example.demo.global.exception.GeneralException;
 import com.example.demo.repository.LeagueRepository;
@@ -38,8 +40,8 @@ public class FootballServiceImpl implements FootballService {
     private final StandingRepository standingRepository;
     private final TeamStatisticsRepository teamStatisticsRepository;
 
-    @Value("${api.key}")
-    private String API_KEY;
+    @Value("${api.rapid.key}")
+    private String RAPID_API_KEY;
 
     @Override
     public void registerLeagueAndTeamStanding() throws JsonProcessingException {
@@ -59,9 +61,9 @@ public class FootballServiceImpl implements FootballService {
         if(needToUpdate) updateTeamStatistics(league);
     }
 
-    // 팀 초기 정보 최신화
+    // 팀 상세 정보 업데이트
     @Override
-    public void updateTeamInitInfo() throws JsonProcessingException {
+    public void updateTeamInitInfo(){
         List<Team> teamList = teamRepository.findAll();
         if(teamList.isEmpty()){
             throw new GeneralException(ErrorStatus.INIT_INFO_NOT_FOUND);
@@ -75,19 +77,37 @@ public class FootballServiceImpl implements FootballService {
                         throw new RuntimeException(e);
                     }
                     team.updateTeamInit(
-                            teamNode.path("team").path("country").toString(),
-                            teamNode.path("venue").path("city").toString(),
-                            teamNode.path("venue").path("name").toString(),
-                            teamNode.path("venue").path("image").toString()
+                            teamNode.path("team").path("country").asText(),
+                            teamNode.path("venue").path("city").asText(),
+                            teamNode.path("venue").path("name").asText(),
+                            teamNode.path("venue").path("image").asText()
                     );
                 }
         );
     }
 
+    @Override
+    public HomeResponseDTO getHomeResponse() {
+        League league = leagueRepository.findById(39L).orElseThrow(
+                () -> new GeneralException(ErrorStatus.INIT_INFO_NOT_FOUND)
+        );
+
+        List<StandingResponseDTO> standingResponseDTOList = league.getStandings().stream()
+                .map(StandingResponseDTO::of)
+                .toList();
+
+        return HomeResponseDTO.builder()
+                .leagueName(league.getName())
+                .leagueLogo(league.getLogo())
+                .season(league.getSeason())
+                .standingResponseDTOList(standingResponseDTOList)
+                .build();
+    }
+
     // RapidAPI를 호출하여 데이터를 가져오는 메소드
     private String requestRapidAPI(String url){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("x-rapidapi-key", API_KEY);
+        headers.set("x-rapidapi-key", RAPID_API_KEY);
         headers.set("x-rapidapi-host", "api-football-v1.p.rapidapi.com");
 
         // HttpEntity를 생성하여 headers 포함
@@ -117,7 +137,7 @@ public class FootballServiceImpl implements FootballService {
     }
 
     public JsonNode fetchTeamData(Long teamId) throws JsonProcessingException {
-        String responseBody = requestRapidAPI("https://api-football-v1.p.rapidapi.com/v3/teams?league=39&season=2024&team=" + teamId);
+        String responseBody = requestRapidAPI("https://api-football-v1.p.rapidapi.com/v3/teams?id=" + teamId);
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readTree(responseBody).path("response").get(0);
     }
@@ -135,9 +155,9 @@ public class FootballServiceImpl implements FootballService {
         }
         return leagueRepository.save(League.builder()
                 .id(leagueNode.path("id").asLong())
-                .name(leagueNode.path("name").toString())
-                .country(leagueNode.path("country").toString())
-                .logo(leagueNode.path("logo").toString())
+                .name(leagueNode.path("name").asText())
+                .country(leagueNode.path("country").asText())
+                .logo(leagueNode.path("logo").asText())
                 .season(leagueNode.path("season").asInt())
                 .build()
         );
@@ -151,16 +171,17 @@ public class FootballServiceImpl implements FootballService {
         for (JsonNode standingNode : standingsArray.get(0)) {
             Team team = saveTeam(standingNode.path("team"));
             saveStanding(standingNode, league, team);
-            registerTeamStatistics(team);
+            registerTeamStatistics(team, league);
         }
     }
 
-    private void registerTeamStatistics(Team team) throws JsonProcessingException {
+    private void registerTeamStatistics(Team team, League league) throws JsonProcessingException {
 
         JsonNode statisticsNode = fetchTeamStatisticsData(team.getId());
         teamStatisticsRepository.save(TeamStatistics.builder()
                 .team(team)
-                .form(statisticsNode.path("form").toString())
+                .league(league)
+                .form(statisticsNode.path("form").asText())
                 .total_played(statisticsNode.path("fixtures").path("played").path("total").asInt())
                 .home_played(statisticsNode.path("fixtures").path("played").path("home").asInt())
                 .away_played(statisticsNode.path("fixtures").path("played").path("away").asInt())
@@ -192,7 +213,7 @@ public class FootballServiceImpl implements FootballService {
         for (JsonNode standingNode : standingsArray.get(0)) {
             Standing standing = standingsMap.get(standingNode.path("team").path("id").asLong());
             if (standing != null) {
-                if(standing.getUpdatedAt().equals(standingNode.path("update").toString())){
+                if(standing.getUpdatedAt().equals(standingNode.path("update").asText())){
                     log.info("최신화할 정보가 없습니다.");
                     return false;
                 }
@@ -213,9 +234,9 @@ public class FootballServiceImpl implements FootballService {
         int totalWin = standingNode.path("all").path("win").asInt();
         int totalDraw = standingNode.path("all").path("draw").asInt();
         int totalLose = standingNode.path("all").path("lose").asInt();
-        String form = standingNode.path("form").toString();
-        String description = standingNode.path("description").toString();
-        String updatedAt = standingNode.path("update").toString();
+        String form = standingNode.path("form").asText();
+        String description = standingNode.path("description").asText();
+        String updatedAt = standingNode.path("update").asText();
 
         standing.updateStanding(rank, points, goalsDiff, goalsFor, goalsAgainst,
                 totalPlayed, totalWin, totalDraw, totalLose, form, description, updatedAt);
@@ -232,7 +253,7 @@ public class FootballServiceImpl implements FootballService {
                     }
 
                     teamStatistics.updateTeamStatistics(
-                            statisticsNode.path("form").toString(),
+                            statisticsNode.path("form").asText(),
                             statisticsNode.path("fixtures").path("played").path("total").asInt(),
                             statisticsNode.path("fixtures").path("played").path("home").asInt(),
                             statisticsNode.path("fixtures").path("played").path("away").asInt(),
@@ -259,8 +280,8 @@ public class FootballServiceImpl implements FootballService {
     private Team saveTeam(JsonNode teamNode){
         return teamRepository.save(Team.builder()
                 .id(teamNode.path("id").asLong())
-                .name(teamNode.path("name").toString())
-                .logo(teamNode.path("logo").toString())
+                .name(teamNode.path("name").asText())
+                .logo(teamNode.path("logo").asText())
                 .build()
         );
     }
@@ -278,8 +299,9 @@ public class FootballServiceImpl implements FootballService {
                 .totalWin(standingNode.path("all").path("win").asInt())
                 .totalDraw(standingNode.path("all").path("draw").asInt())
                 .totalLose(standingNode.path("all").path("lose").asInt())
-                .form(standingNode.path("form").toString())
-                .description(standingNode.path("description").toString())
+                .form(standingNode.path("form").asText())
+                .description(standingNode.path("description").asText())
+                .updatedAt(standingNode.path("update").asText())
                 .build()
         );
     }

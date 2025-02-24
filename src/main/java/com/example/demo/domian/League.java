@@ -27,5 +27,4 @@ public class League {
     @OneToMany(mappedBy = "league")
     private List<Standing> standings = new ArrayList<>();
 
-
 }

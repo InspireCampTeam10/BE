@@ -1,5 +1,6 @@
 package com.example.demo.service.footballService;
 
+import com.example.demo.dto.response.HomeResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface FootballService {
@@ -8,5 +9,7 @@ public interface FootballService {
 
     void updateTeamStatisticsAndStanding() throws JsonProcessingException;
 
-    void updateTeamInitInfo() throws JsonProcessingException;
+    void updateTeamInitInfo();
+
+    HomeResponseDTO getHomeResponse();
 }

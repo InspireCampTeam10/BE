@@ -27,4 +27,11 @@ public class League {
     @OneToMany(mappedBy = "league")
     private List<Standing> standings = new ArrayList<>();
 
+    public void updateLeague(String name, String country, String logo, int season) {
+        if(name != null) this.name = name;
+        if(country != null) this.country = country;
+        if(logo != null) this.logo = logo;
+        if(season != 0) this.season = season;
+    }
+
 }

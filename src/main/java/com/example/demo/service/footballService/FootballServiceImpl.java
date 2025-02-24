@@ -4,6 +4,8 @@ import com.example.demo.domian.League;
 import com.example.demo.domian.Standing;
 import com.example.demo.domian.Team;
 import com.example.demo.domian.TeamStatistics;
+import com.example.demo.dto.request.LeagueInfoUpdateDTO;
+import com.example.demo.dto.request.TeamInfoUpdateDTO;
 import com.example.demo.dto.response.HomeResponseDTO;
 import com.example.demo.dto.response.StandingResponseDTO;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
@@ -82,6 +84,36 @@ public class FootballServiceImpl implements FootballService {
                             teamNode.path("venue").path("name").asText(),
                             teamNode.path("venue").path("image").asText()
                     );
+                }
+        );
+    }
+
+    @Override
+    public void updateTeamInfo(Long teamId, TeamInfoUpdateDTO teamInfoUpdateDTO) {
+        teamRepository.findById(teamId).ifPresentOrElse(
+                team -> team.updateTeam(
+                            teamInfoUpdateDTO.getName(),
+                            teamInfoUpdateDTO.getCountry(),
+                            null,
+                            teamInfoUpdateDTO.getCity(),
+                            teamInfoUpdateDTO.getVenueName(),
+                            null),
+                () -> {
+                    throw new GeneralException(ErrorStatus.TEAM_NOT_FOUND);
+                }
+        );
+    }
+
+    @Override
+    public void updateLeagueInfo(LeagueInfoUpdateDTO leagueInfoUpdateDTO) {
+        leagueRepository.findById(39L).ifPresentOrElse(
+                league -> league.updateLeague(
+                        leagueInfoUpdateDTO.getName(),
+                        leagueInfoUpdateDTO.getCountry(),
+                        null,
+                        0),
+                () -> {
+                    throw new GeneralException(ErrorStatus.LEAGUE_NOT_FOUND);
                 }
         );
     }

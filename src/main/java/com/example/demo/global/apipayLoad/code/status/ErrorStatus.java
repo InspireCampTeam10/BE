@@ -40,6 +40,9 @@ public enum ErrorStatus implements BaseCode {
     LEAGUE_NOT_FOUND(HttpStatus.BAD_REQUEST, "LEAGUE4003", "리그가 존재하지 않습니다."),
     INIT_INFO_NOT_FOUND(HttpStatus.BAD_REQUEST, "LEAGUE4004", "초기 정보가 존재하지 않습니다."),
 
+    // Team Error
+    TEAM_NOT_FOUND(HttpStatus.BAD_REQUEST, "TEAM4001", "팀이 존재하지 않습니다."),
+
     // Upload Error
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD5001", "파일 업로드에 실패했습니다."),
     FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "FILE_UPLOAD5002", "파일 삭제에 실패했습니다."),

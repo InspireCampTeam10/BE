@@ -4,7 +4,6 @@ import com.example.demo.JWT.JWTUtil;
 import com.example.demo.domian.User;
 import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.global.apipayLoad.code.status.ErrorStatus;
-import com.example.demo.global.apipayLoad.handler.TempHandler;
 import com.example.demo.global.exception.GeneralException;
 import com.example.demo.repository.UserRepository;
 import jakarta.transaction.Transactional;

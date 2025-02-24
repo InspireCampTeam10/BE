@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: Book
+      MYSQL_USER: springboot
+      MYSQL_PASSWORD: p@ssw0rd
+    ports:
+      - "3308:3306"
+    networks:
+      - my_network
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  backend:
+    image: kimdaehyun2019/github-actions-demo:latest
+    container_name: backend_container  # Docker Hub에서 이미지 가져온다
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy  # MySQL이 정상적으로 실행된 후 시작
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/Book?useUnicode=true&characterEncoding=utf-8&serverTimeZone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: springboot
+      SPRING_DATASOURCE_PASSWORD: p@ssw0rd
+    ports:
+      - "8090:8090"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+
+volumes:
+  mysql_data:

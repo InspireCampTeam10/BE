@@ -2,19 +2,19 @@ version: '3.8'
 
 services:
   eureka:
-    image: kdh19/eurekaimg:0.0.2
+    image: kdh19/eureka:latest
     container_name: eureka_container
     restart: always
     ports:
-      - "8761:8080"
+      - "8761:8761"
     networks:
       - my_network
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
-#      interval: 10s
-#      retries: 10
-#      timeout: 5s
-#      start_period: 30s # Eureka가 부팅될 시간을 확보
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      retries: 10
+      timeout: 5s
+      start_period: 15s # Eureka가 부팅될 시간을 확보
 
   mysql:
     image: mysql:8
@@ -38,21 +38,33 @@ services:
       timeout: 5s
 
   backend:
-    image: kimdaehyun2019/springimg:latest
-    container_name: backend_container
+    image: kdh19/springimg:0.0.2
+#    container_name: backend_container
+
     restart: always
     depends_on:
       mysql:
         condition: service_healthy  # MySQL이 정상적으로 실행된 후 시작
       eureka:
-        condition: service_started  # Eureka가 시작된 후 실행
+        condition: service_healthy  # Eureka가 시작된 후 실행
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/Book?useUnicode=true&characterEncoding=utf-8&serverTimeZone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: springboot
       SPRING_DATASOURCE_PASSWORD: p@ssw0rd
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8080/eureka/  # Eureka 서버 주소 추가
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/  # Eureka 서버 주소 추가
     ports:
       - "8090:8090"
+    networks:
+      - my_network
+
+  front:
+    image: jjabc3758/sports-news:0.0.1
+    container_name: front_container
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "1000:80"  # React 앱 기본 포트
     networks:
       - my_network
 
@@ -61,3 +73,4 @@ networks:
 
 volumes:
   mysql_data:
+

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   eureka:
-    image: kdh19/eurekaimg:latest
+    image: kdh19/eurekaimg:0.0.1
     container_name: eureka_container
     restart: always
     ports:

@@ -38,7 +38,7 @@ services:
       timeout: 5s
 
   backend:
-    image: kdh19/springimg:0.0.2
+    image: kdh19/springimg:0.0.3
 #    container_name: backend_container
 
     restart: always

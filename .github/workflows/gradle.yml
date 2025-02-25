@@ -65,7 +65,7 @@ jobs:
 
     # 5. Docker Hub 이미지 푸시
     - name: docker Hub push
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/springimg
+      run: docker push --no-cache ${{ secrets.DOCKERHUB_USERNAME }}/springimg
     
 
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.

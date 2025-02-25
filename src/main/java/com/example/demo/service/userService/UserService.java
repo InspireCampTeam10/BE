@@ -9,6 +9,6 @@ import java.util.Map;
 public interface UserService {
 
     public Long  getCurrentUID(String userName);
-    public void updateNickname(String username, String newNickname);
+    public String updateNickname(String username, String newNickname);
     public String updateProfileImage(String username, MultipartFile file);
 }

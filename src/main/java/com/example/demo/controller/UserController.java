@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PutMapping("/user/update")
-    public ApiResponse<Boolean> updateNickname(NicknameUpdateDTO nicknameUpdateDTO) {
+    public ApiResponse<String> updateNickname(NicknameUpdateDTO nicknameUpdateDTO) {
         // 🔥 현재 로그인된 사용자 가져오기
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication == null || !authentication.isAuthenticated()) {
@@ -37,15 +37,15 @@ public class UserController {
         System.out.println(username);
 
         // 닉네임 변경
-        userService.updateNickname(username, nicknameUpdateDTO.getUserNickname());
+        String newToken = userService.updateNickname(username, nicknameUpdateDTO.getUserNickname());
 
-            return ApiResponse.onSuccess(true);
+        return ApiResponse.onSuccess(newToken);
     }
 
     // ✅ 기존 프로필 이미지를 업데이트 (덮어쓰기)
     @PutMapping("/user/profileIMG")
     public ApiResponse<String> updateProfileImage(@RequestParam String username, @RequestParam("file") MultipartFile file) {
-        String fileUrl = userService.updateProfileImage(username, file);
-        return ApiResponse.onSuccess(fileUrl);
+        String newToken = userService.updateProfileImage(username, file);
+        return ApiResponse.onSuccess(newToken);
     }
 }

@@ -45,18 +45,25 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateNickname(String username, String newNickname){
+    public String updateNickname(String username, String newNickname) {
         User userEntity = userRepository.findByUsername(username);
 
         System.out.println("username: " + username + ", newNickName: " + newNickname);
-        if(userEntity == null){
+        if (userEntity == null) {
             System.out.println("사용자 없음");
             throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
         }
 
+        // 닉네임 변경
         userEntity.setUserNickname(newNickname);
         userRepository.save(userEntity);
+
+        // 새로운 JWT 발급 (변경된 닉네임 포함)
+        String newToken = jwtUtil.createJwt(userEntity.getUsername(), userEntity.getRole(), userEntity.getUserNickname(), userEntity.getProfileImageUrl(),600 * 600 * 100L);
+
+        return newToken;  //새로운 JWT 반환
     }
+
 
     // 프로필 이미지 업로드 및 저장 (로컬에 저장)
     @Transactional
@@ -84,7 +91,8 @@ public class UserServiceImpl implements UserService {
             userEntity.setProfileImageUrl(fileUrl);
             userRepository.save(userEntity);
 
-            return fileUrl;
+            String newToken = jwtUtil.createJwt(userEntity.getUsername(), userEntity.getRole(), userEntity.getUserNickname(), fileUrl,600 * 600 * 100L);
+            return newToken;
         } catch (Exception e) {
 //            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
             throw new GeneralException(ErrorStatus.FILE_UPLOAD_FAILED);

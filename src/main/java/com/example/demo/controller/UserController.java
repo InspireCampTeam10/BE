@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PutMapping("/user/update")
-    public ApiResponse<String> updateNickname(NicknameUpdateDTO nicknameUpdateDTO) {
+    public ApiResponse<String> updateNickname(@RequestBody NicknameUpdateDTO nicknameUpdateDTO) {
         // 🔥 현재 로그인된 사용자 가져오기
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication == null || !authentication.isAuthenticated()) {

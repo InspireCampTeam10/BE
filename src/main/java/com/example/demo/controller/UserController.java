@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 
 @RestController
 public class UserController {
@@ -24,7 +26,7 @@ public class UserController {
     }
 
     @PutMapping("/user/update")
-    public ApiResponse<String> updateNickname(NicknameUpdateDTO nicknameUpdateDTO) {
+    public ApiResponse<String> updateNickname(@RequestBody NicknameUpdateDTO nicknameUpdateDTO) {
         // 🔥 현재 로그인된 사용자 가져오기
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        if (authentication == null || !authentication.isAuthenticated()) {
@@ -44,8 +46,8 @@ public class UserController {
 
     // ✅ 기존 프로필 이미지를 업데이트 (덮어쓰기)
     @PutMapping("/user/profileIMG")
-    public ApiResponse<String> updateProfileImage(@RequestParam String username, @RequestParam("file") MultipartFile file) {
-        String newToken = userService.updateProfileImage(username, file);
+    public ApiResponse<Map<String,String>> updateProfileImage(@RequestParam String username, @RequestParam("file") MultipartFile file) {
+        Map<String,String> newToken = userService.updateProfileImage(username, file);
         return ApiResponse.onSuccess(newToken);
     }
 }

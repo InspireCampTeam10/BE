@@ -38,7 +38,7 @@ services:
       timeout: 5s
 
   backend:
-    image: kdh19/springimg:0.0.3
+    image: kdh19/springimg:0.0.8
 #    container_name: backend_container
 
     restart: always
@@ -58,7 +58,7 @@ services:
       - my_network
 
   front:
-    image: jjabc3758/sports-news:0.0.1
+    image: jjabc3758/sports-news:0.0.4
     container_name: front_container
     restart: always
     depends_on:

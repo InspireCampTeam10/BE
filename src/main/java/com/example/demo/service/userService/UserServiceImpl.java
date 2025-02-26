@@ -11,9 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,12 @@ public class UserServiceImpl implements UserService {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
+
+    // Base64 인코딩 메서드 추가
+    private String encodeFileToBase64(Path filePath) throws IOException {
+        byte[] fileBytes = Files.readAllBytes(filePath);
+        return Base64.getEncoder().encodeToString(fileBytes);
+    }
 
     public UserServiceImpl(JWTUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
@@ -65,10 +73,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    // 프로필 이미지 업로드 및 저장 (로컬에 저장)
     @Transactional
     @Override
-    public String updateProfileImage(String username, MultipartFile file) {
+    public Map<String, String> updateProfileImage(String username, MultipartFile file) {
         User userEntity = userRepository.findByUsername(username);
         if (userEntity == null) {
             throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
@@ -85,16 +92,25 @@ public class UserServiceImpl implements UserService {
             Files.write(filePath, file.getBytes());
 
             // 저장된 파일의 URL 생성
-            String fileUrl = "/uploads/" + fileName;  // 로컬 서버에서 접근 가능하게 설정
+            String fileUrl = "/uploads/" + fileName;
 
             // User 엔티티에 저장
             userEntity.setProfileImageUrl(fileUrl);
             userRepository.save(userEntity);
 
-            String newToken = jwtUtil.createJwt(userEntity.getUsername(), userEntity.getRole(), userEntity.getUserNickname(), fileUrl,600 * 600 * 100L);
-            return newToken;
+            // Base64 인코딩
+            String base64Image = encodeFileToBase64(filePath);
+
+            // 새로운 JWT 생성
+            String newToken = jwtUtil.createJwt(userEntity.getUsername(), userEntity.getRole(), userEntity.getUserNickname(), fileUrl, 600 * 600 * 100L);
+
+            // JSON 형태로 반환
+            Map<String, String> response = new HashMap<>();
+            response.put("token", newToken);
+            response.put("image", base64Image);
+
+            return response;
         } catch (Exception e) {
-//            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
             throw new GeneralException(ErrorStatus.FILE_UPLOAD_FAILED);
         }
     }

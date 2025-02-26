@@ -10,5 +10,5 @@ public interface UserService {
 
     public Long  getCurrentUID(String userName);
     public String updateNickname(String username, String newNickname);
-    public String updateProfileImage(String username, MultipartFile file);
+    public Map<String, String> updateProfileImage(String username, MultipartFile file);
 }

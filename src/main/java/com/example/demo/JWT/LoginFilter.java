@@ -13,10 +13,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -64,8 +64,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication)
-    throws IOException {
-//        System.out.println("Successful Authentication");
+            throws IOException {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String username = customUserDetails.getUsername();
 
@@ -75,28 +74,39 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String role = auth.getAuthority();
         String nickname = customUserDetails.getUserNickname();
-        String imgUrl =customUserDetails.getUserImgUrl();
+        String imgUrl = customUserDetails.getUserImgUrl(); // DB에 저장된 프로필 이미지 URL
 
-        String token = jwtUtil.createJwt(username,role, nickname, imgUrl,600*600*100L);
+        // Base64 변환할 변수 선언
+        String base64Image = null;
 
-        // 베어러 텍스트 뒤에 띄어쓰기 꼭 해야한다 ㅋㅋ
-        response.addHeader("Authorization","Bearer "+token);
+        if (imgUrl != null && !imgUrl.isEmpty()) {
+            try {
+                Path imagePath = Paths.get("uploads/" + imgUrl.substring(imgUrl.lastIndexOf("/") + 1));
+                if (Files.exists(imagePath)) {
+                    byte[] fileBytes = Files.readAllBytes(imagePath);
+                    base64Image = Base64.getEncoder().encodeToString(fileBytes);
+                }
+            } catch (IOException e) {
+                base64Image = null; // 이미지 읽기 실패 시 null 처리
+            }
+        }
 
-        //  JSON 형식의 응답을 만들기 위해 Map 사용
+        // JWT 생성 (이미지 URL 포함)
+        String token = jwtUtil.createJwt(username, role, nickname, imgUrl, 600 * 600 * 100L);
+
+        // 응답 JSON 구성
         Map<String, String> responseBody = new HashMap<>();
         responseBody.put("token", token);
-//        responseBody.put("token_type", "Bearer");
-//        responseBody.put("username", username);
-//        responseBody.put("role", role);
-        // 여기서 UserNickname 추가할수도있음 ㅇㅇ
+        responseBody.put("image", base64Image); // Base64 이미지 추가 (없으면 null)
 
-        // 응답을 JSON 형식으로 설정
+        // 응답 설정
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // Jackson의 ObjectMapper를 사용하여 JSON으로 변환 후 응답 Body에 추가
+        // JSON 응답 반환
         new ObjectMapper().writeValue(response.getWriter(), responseBody);
     }
+
 
 
     @Override

@@ -58,6 +58,9 @@ dependencies {
 
 	// Spring Cloud Eureka
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// csv reader
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.16.1'
 }
 
 

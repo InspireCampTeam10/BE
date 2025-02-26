@@ -6,9 +6,12 @@ import com.example.demo.dto.response.LeagueInfoResponseDTO;
 import com.example.demo.global.apipayLoad.ApiResponse;
 import com.example.demo.service.footballService.FootballService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -62,5 +65,15 @@ public class AdminController {
     @GetMapping("/football/team/{teamId}")
     public ApiResponse<?> getHomeResponse(@PathVariable Long teamId) {
         return ApiResponse.onSuccess(footballService.getTeamInfo(teamId));
+    }
+
+    @GetMapping("/football/league/export")
+    public void exportLeagueDataToCsv(HttpServletResponse response) throws Exception {
+        // 1. 응답 헤더 설정 (CSV 파일 다운로드)
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=league_info.csv");
+
+        // 2. CSV 파일 생성
+        footballService.getLeagueStandingCsv(response);
     }
 }

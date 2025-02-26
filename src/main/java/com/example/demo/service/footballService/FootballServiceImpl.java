@@ -16,6 +16,9 @@ import com.example.demo.repository.TeamStatisticsRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +182,23 @@ public class FootballServiceImpl implements FootballService {
         );
 
         return TeamResponseDTO.of(team, standing, teamStatistics);
+    }
+
+    @Override
+    public HttpServletResponse getLeagueStandingCsv(HttpServletResponse response) throws IOException {
+        League league = leagueRepository.findById(39L).orElseThrow(
+                () -> new GeneralException(ErrorStatus.INIT_INFO_NOT_FOUND)
+        );
+
+        List<StandingResponseDTO> standings = league.getStandings().stream()
+                .map(StandingResponseDTO::of)
+                .toList();
+
+        CsvMapper csvMapper = new CsvMapper();
+        CsvSchema schema = csvMapper.schemaFor(StandingResponseDTO.class).withHeader();
+
+        csvMapper.writer(schema).writeValue(response.getWriter(), standings);
+        return response;
     }
 
     // RapidAPI를 호출하여 데이터를 가져오는 메소드

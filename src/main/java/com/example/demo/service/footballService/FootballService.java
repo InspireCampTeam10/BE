@@ -7,6 +7,8 @@ import com.example.demo.dto.response.LeagueInfoResponseDTO;
 import com.example.demo.dto.response.TeamInfoResponseDTO;
 import com.example.demo.dto.response.TeamResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface FootballService {
 
@@ -28,4 +30,5 @@ public interface FootballService {
 
     TeamResponseDTO getTeamStandingAndStatistics(Long teamId);
 
+    HttpServletResponse getLeagueStandingCsv(HttpServletResponse response) throws Exception;
 }
